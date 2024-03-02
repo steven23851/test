@@ -37,7 +37,7 @@ jobs:
       - name: Install Docutils
         run: pip install docutils pygments
 
-      - name: rst2html - Docutils
+      - name: rst2html using Docutils
         working-directory: ./docs/
         run: |
           while read -r RST
@@ -45,7 +45,7 @@ jobs:
             python -m docutils --writer=html5 --output="${RST%.rst}.html" -- "$RST"
           done < <(find . -type f -name "*.rst")
 
-      - name: md2html - Jekyll
+      - name: Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./docs/
