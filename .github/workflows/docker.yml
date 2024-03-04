@@ -4,11 +4,16 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "master"
+    - master
+
+permissions:
+  packages: write
 
 jobs:
-  docker:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
 
@@ -18,13 +23,10 @@ jobs:
         images: |
           steven23851/test
           ghcr.io/steven23851/test
-        flavor: |
-          latest=true
-          prefix=PRE
-          suffix=SUF
         tags: |
           type=ref,event=tag
-          type=sha,format=long
+          type=raw,value=dev
+          type=sha,format=long,prefix=
           type=raw,value={{date 'YYYYMMDD'}}
 
     - run: |
@@ -33,3 +35,28 @@ jobs:
         echo
         echo LABELS:
         echo "${{ steps.metadata.outputs.labels }}"
+
+    - uses: docker/setup-qemu-action@v3
+
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+    - uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
