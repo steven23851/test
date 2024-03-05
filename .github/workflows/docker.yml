@@ -11,10 +11,26 @@ on:
 permissions:
   packages: write
 
+concurrency:
+  group: docker
+  cancel-in-progress: false
+
 jobs:
+  debug:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: |
+        echo Commit Message
+        echo ${{ github.event.head_commit.message }}
+        echo Ref
+        echo ${{ github.ref }}
+
   build:
 
     runs-on: ubuntu-latest
+    if: false
 
     steps:
     - uses: actions/checkout@v4
