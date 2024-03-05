@@ -16,36 +16,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  debug:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - run: |
-        echo Commit Message
-        echo ${{ github.event.head_commit.message }}
-        echo Ref
-        echo ${{ github.ref }}
-        echo ${{ ! startsWith( github.event.head_commit.message , 'release version ' ) }}
-        echo ${{ startsWith( github.ref , 'refs/tags/v' ) }}
-        echo ${{ ! startsWith( github.event.head_commit.message , 'release version ' ) || startsWith( github.ref , 'refs/tags/v' ) }}
-
-  expr:
-
-    runs-on: ubuntu-latest
-    if: ${{ ! startsWith( github.event.head_commit.message , 'release version ' ) || startsWith( github.ref , 'refs/tags/v' ) }}
-
-    steps:
-    - run: |
-        echo Commit Message
-        echo ${{ github.event.head_commit.message }}
-        echo Ref
-        echo ${{ github.ref }}
-
   build:
 
     runs-on: ubuntu-latest
-    if: false
+
+    # run only for tag on release commits
+    if: ${{ ! startsWith( github.event.head_commit.message , 'release version ' ) || startsWith( github.ref , 'refs/tags/v' ) }}
 
     steps:
     - uses: actions/checkout@v4
