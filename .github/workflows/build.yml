@@ -1,0 +1,78 @@
+name: Executables
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    tags-ignore:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        architecture: ["x64"]
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }} ${{ matrix.architecture }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
+
+    - name: Build executable
+      env:
+        EXE_NAME: ${{ matrix.os }}
+      run: |
+        pip install pyinstaller
+        python ./pyinstaller.py
+
+    - name: debug 321
+      run: |
+        echo ""
+        echo Before Upload ${{ matrix.os }}
+        find ./dist ./build
+        echo ""
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: test-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.python-version }}
+        path: dist/*
+        retention-days: 1
+        compression-level: 0
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Date
+      run: echo "DATE=$(date '%Y%m%d')" >> "$GITHUB_ENV"
+
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v4
+
+    - name: debug 123
+      run: |
+        echo
+        echo After Download
+        find .
+        echo
+
+    - uses: ncipollo/release-action@v1
+      if: false
+      with:
+        artifacts: "release.tar.gz,foo/*.txt"
+        tag: ${{ env.DATE }}
