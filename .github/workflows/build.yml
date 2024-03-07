@@ -47,7 +47,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: test-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.python-version }}
+        name: executable-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.python-version }}
         path: dist/*
         retention-days: 1
         compression-level: 0
@@ -56,10 +56,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
     - name: Date
-      run: echo "DATE=$(date '%Y%m%d')" >> "$GITHUB_ENV"
+      run: echo "DATE=$(date '+%Y%m%d')" >> "$GITHUB_ENV"
 
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v4
@@ -72,7 +70,7 @@ jobs:
         echo
 
     - uses: ncipollo/release-action@v1
-      if: false
       with:
-        artifacts: "release.tar.gz,foo/*.txt"
+        artifacts: "executable-*/*"
+        repo: steven23851-org/builds
         tag: ${{ env.DATE }}
