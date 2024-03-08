@@ -1,10 +1,9 @@
 import sys
-
-version = "0.1.5"
+from . import version
 
 
 def main():
     # comment2
-    sys.stdout.write(f"{version}\n")
+    sys.stdout.write(f"{version.__version__}\n")
     sys.stdout.write("\n".join(sys.argv) + "\n")
     return 0
