@@ -82,8 +82,11 @@ jobs:
 
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: "executable-*/*"
         owner: steven23851-org
         repo: builds
         tag: ${{ env.DATE }}
+        artifacts: "executable-*/*"
+        allowUpdates: true
+        generateReleaseNotes: true
+        makeLatest: true
         token: ${{ secrets.RELEASE_TOKEN }}
