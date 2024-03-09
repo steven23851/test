@@ -8,6 +8,9 @@ on:
     tags-ignore:
       - "*"
 
+env:
+  DATE_FORMAT: "%Y.%m.%d"
+
 jobs:
   build:
 
@@ -32,7 +35,7 @@ jobs:
         architecture: ${{ matrix.architecture }}
 
     - name: Date
-      run: echo "DATE=$(date '+%Y%m%d')" >> "$GITHUB_ENV"
+      run: echo "DATE=$(date '+${{ env.DATE_FORMAT }}')" >> "$GITHUB_ENV"
 
     - name: Update Version
       shell: python
@@ -42,19 +45,16 @@ jobs:
         with open(path) as fp:
             content = fp.read()
         content = re.sub(
-            r"(__version__ = \"\d+\.\d+\.\d+)(-dev)?",
-            r"\1.${{ env.DATE }}",
+            r'\b(__version__ = "[^"]+)',
+            r"\1:${{ env.DATE }}",
             content)
         with open(path, "w") as fp:
             fp.write(content)
 
     - name: Build executable
-      env:
-        MATRIX_OS: ${{ matrix.os }}
-        MATRIX_ARCH: ${{ matrix.architecture }}
       run: |
         pip install pyinstaller
-        python ./pyinstaller.py
+        python ./pyinstaller.py -o '${{ matrix.os }}' -a '${{ matrix.architecture }}'
 
     - uses: actions/upload-artifact@v4
       with:
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Date
-      run: echo "DATE=$(date '+%Y%m%d')" >> "$GITHUB_ENV"
+      run: echo "DATE=$(date '+${{ env.DATE_FORMAT }}')" >> "$GITHUB_ENV"
 
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v4

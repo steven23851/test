@@ -1,19 +1,31 @@
 #!/usr/bin/env python3
 
+import sys
+import argparse
 import PyInstaller.__main__
-import os
-
-OS_NAME = os.environ.get("MATRIX_OS")
-OS_ARCH = os.environ.get("MATRIX_ARCH")
 
 
-name = "test-application-{}-{}".format(OS_NAME, OS_ARCH)
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--os")
+    parser.add_argument("-a", "--arch")
+    args = parser.parse_args()
 
-PyInstaller.__main__.run([
-    "--onefile",
-    "--console",
-    "--name", name,
-    "--workpath", "build",
-    "--specpath", "build",
-    "application/__main__.py",
-])
+    name = "test-application"
+    if args.os:
+        name = "{}_{}".format(name, args.os.partition("-")[0].lower())
+    if args.arch and args.arch == "x86":
+        name += "_x86"
+
+    return PyInstaller.__main__.run([
+        "--onefile",
+        "--console",
+        "--name", name,
+        "--workpath", "build",
+        "--specpath", "build",
+        "application/__main__.py",
+    ])
+
+
+if __name__ == "__main__":
+    sys.exit(main())
