@@ -87,6 +87,5 @@ jobs:
         tag: ${{ env.DATE }}
         artifacts: "executable-*/*"
         allowUpdates: true
-        generateReleaseNotes: true
         makeLatest: true
         token: ${{ secrets.RELEASE_TOKEN }}
