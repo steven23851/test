@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
+        os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
         architecture: ["x64"]
         python-version: ["3.12"]
 
@@ -84,9 +84,9 @@ jobs:
       with:
         owner: steven23851-org
         repo: builds
-        tag: test2
+        omitBody: true
+        tag: ${{ env.DATE }}
         artifacts: "executable-*/*"
-        body: " "
         allowUpdates: true
         makeLatest: true
         token: ${{ secrets.RELEASE_TOKEN }}
