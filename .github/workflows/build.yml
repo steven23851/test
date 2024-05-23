@@ -21,7 +21,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
+        # os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
+        os: ["ubuntu-latest"]
         architecture: ["x64"]
         python-version: ["3.12"]
 
@@ -70,6 +71,9 @@ jobs:
     - name: Date
       run: echo "DATE=$(date '+${{ env.DATE_FORMAT }}')" >> "$GITHUB_ENV"
 
+    - name: Body File
+      run: printf 'https://github.com/%s/commit/%s' '${{ github.repository }}' '${{ github.sha }}' > body.md
+
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v4
 
@@ -79,14 +83,16 @@ jobs:
         echo After Download
         find .
         echo
+        cat body.md
+        echo
 
     - uses: ncipollo/release-action@v1
       with:
         owner: steven23851-org
         repo: builds
-        omitBody: true
         tag: ${{ env.DATE }}
         artifacts: "executable-*/*"
+        bodyFile: body.md
         allowUpdates: true
         makeLatest: true
         token: ${{ secrets.RELEASE_TOKEN }}
