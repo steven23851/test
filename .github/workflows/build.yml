@@ -22,7 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         # os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
-        os: ["ubuntu-latest"]
+        os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
+        # os: ["ubuntu-latest"]
         architecture: ["x64"]
         python-version: ["3.12"]
 
@@ -36,6 +37,7 @@ jobs:
         architecture: ${{ matrix.architecture }}
 
     - name: Environment Values
+      shell: bash
       run: |
         echo "DATE=$(date '+${{ env.DATE_FORMAT }}')" >> "$GITHUB_ENV"
         echo "LABEL=$(python ./pyinstaller.py -p -o '${{ matrix.os }}' -a '${{ matrix.architecture }}')" >> "$GITHUB_ENV"
