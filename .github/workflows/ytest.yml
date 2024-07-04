@@ -1,0 +1,30 @@
+name: YAML Test
+
+on:
+  workflow_dispatch:
+  push:
+
+env:
+  WF_REPO   : ${{ github.repository == 'steven23851/test2' }}
+  WF_RELEASE: ${{ 2 }}
+  WF_TAG    :  ${{
+        github.repository == 'steven23851/test' &&
+        ( ! startsWith( github.event.head_commit.message , 'new ' ) ||
+            startsWith( github.ref , 'refs/tags/v' ))
+    }}
+
+jobs:
+  yaml:
+    if: ${{
+        github.repository == 'steven23851/test' &&
+        ( ! startsWith( github.event.head_commit.message , 'new ' ) ||
+            startsWith( github.ref , 'refs/tags/v' ))
+      }}
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: confirm
+      run: |
+        echo repo $WF_REPO
+        echo release $WF_RELEASE
+        echo tag $WF_TAG

@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   dispatch:
+    if: github.repository == 'steven23851/test'
     runs-on: ubuntu-latest
     steps:
     - name: dispatch
